@@ -21,7 +21,7 @@ class ProductController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|integer',
-            'iamge' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         $imagePath = $request->file('image')->store('products', 'public');
