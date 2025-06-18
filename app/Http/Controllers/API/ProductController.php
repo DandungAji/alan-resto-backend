@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return response()->json(Product::all());
+        return Product::all();
     }
 
     /**
@@ -18,17 +18,20 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|integer',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
+        $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'price' => 'required|integer',
+        'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+    ]);
 
-        $imagePath = $request->file('image')->store('products', 'public');
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+    }
 
     $product = Product::create([
-        'name' => $request->name,
-        'price' => $request->price,
+        'name' => $validated['name'],
+        'price' => $validated['price'],
         'image' => $imagePath
     ]);
 
