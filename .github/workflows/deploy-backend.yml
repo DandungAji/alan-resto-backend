@@ -1,0 +1,38 @@
+name: Deploy Laravel Backend to cPanel
+
+on:
+  push:
+    branches:
+      - deploy-backend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mbstring, bcmath, pdo, pdo_mysql, tokenizer, xml
+
+      - name: Install Dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader
+
+      - name: Upload to cPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          local-dir: .
+          server-dir: public_html/alan-resto-be/
+          exclude: |
+            **/.git*
+            **/node_modules/**
+            **/tests/**
+            .github/
